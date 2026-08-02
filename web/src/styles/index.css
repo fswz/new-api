@@ -168,6 +168,83 @@ For commercial licensing, please contact support@quantumnous.com
   }
 }
 
+/* Shared return path from the API surfaces to the LeYao portal. */
+.leyao-portal-link {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid rgb(125 211 252 / 0.72);
+  background: #1264e8;
+  color: #fff;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.24),
+    0 5px 18px rgb(18 100 232 / 0.3);
+  transition: transform 180ms ease;
+}
+
+.leyao-portal-link::before {
+  position: absolute;
+  inset: -25% auto -25% -45%;
+  z-index: 0;
+  width: 34%;
+  content: '';
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgb(255 255 255 / 0.46),
+    transparent
+  );
+  opacity: 0;
+  transform: translateX(-180%) skewX(-16deg);
+  animation: leyao-portal-sheen 3.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.leyao-portal-link:hover {
+  transform: translateY(-2px);
+}
+
+.leyao-portal-link:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.leyao-portal-link:focus-visible {
+  outline: 2px solid #38bdf8;
+  outline-offset: 3px;
+}
+
+@keyframes leyao-portal-sheen {
+  0%,
+  58% {
+    opacity: 0;
+    transform: translateX(-180%) skewX(-16deg);
+  }
+  68% {
+    opacity: 0.9;
+  }
+  82% {
+    opacity: 0;
+    transform: translateX(520%) skewX(-16deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(520%) skewX(-16deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .leyao-portal-link,
+  .leyao-portal-link::before {
+    animation: none;
+    transition: none;
+  }
+
+  .leyao-portal-link:hover,
+  .leyao-portal-link:active {
+    transform: none;
+  }
+}
+
 @utility container {
   margin-inline: auto;
   padding-inline: 2rem;

@@ -219,18 +219,36 @@ export function PublicHeader(props: PublicHeaderProps) {
                 : 'h-16 px-2'
             )}
           >
-            {/* Logo */}
-            <Link
-              to={homeUrl}
-              className='group flex shrink-0 items-center gap-2.5'
-            >
-              <div className='flex size-7 shrink-0 items-center justify-center transition-all duration-300 group-hover:scale-105'>
-                {logoContent}
-              </div>
-              <span className='text-sm font-semibold tracking-tight'>
-                {loading ? <Skeleton className='h-4 w-16' /> : displaySiteName}
-              </span>
-            </Link>
+            <div className='flex min-w-0 shrink-0 items-center gap-2'>
+              {/* Logo */}
+              <Link
+                to={homeUrl}
+                className='group flex min-w-0 shrink-0 items-center gap-2.5'
+              >
+                <div className='flex size-7 shrink-0 items-center justify-center transition-transform duration-300 group-hover:scale-105'>
+                  {logoContent}
+                </div>
+                <span className='truncate text-sm font-semibold tracking-tight'>
+                  {loading ? (
+                    <Skeleton className='h-4 w-16' />
+                  ) : (
+                    displaySiteName
+                  )}
+                </span>
+              </Link>
+
+              <a
+                href='https://leyao.fswz.cc/'
+                aria-label={t('LeYao portal home')}
+                title={t('LeYao portal home')}
+                className='leyao-portal-link inline-flex size-8 shrink-0 items-center justify-center gap-1.5 rounded-lg text-xs font-semibold lg:w-auto lg:px-3'
+              >
+                <Home className='relative z-10 size-4' aria-hidden='true' />
+                <span className='relative z-10 hidden whitespace-nowrap lg:inline'>
+                  {t('LeYao portal home')}
+                </span>
+              </a>
+            </div>
 
             {/* Desktop nav */}
             <div className='hidden items-center gap-0.5 sm:flex'>
@@ -273,18 +291,6 @@ export function PublicHeader(props: PublicHeaderProps) {
                   </Link>
                 )
               })}
-
-              <a
-                href='https://leyao.fswz.cc/'
-                aria-label={t('LeYao portal home')}
-                title={t('LeYao portal home')}
-                className='bg-foreground text-background hover:bg-foreground/90 ring-foreground/10 inline-flex h-8 items-center gap-1.5 rounded-lg px-3 text-sm font-semibold shadow-sm ring-1 transition-all duration-200 hover:-translate-y-px active:translate-y-0'
-              >
-                <Home className='size-4' aria-hidden='true' />
-                <span className='hidden xl:inline'>
-                  {t('LeYao portal home')}
-                </span>
-              </a>
 
               {(showLanguageSwitcher ||
                 showThemeSwitch ||
@@ -409,24 +415,6 @@ export function PublicHeader(props: PublicHeaderProps) {
                 </Link>
               )
             })}
-            <a
-              href='https://leyao.fswz.cc/'
-              onClick={() => setMobileOpen(false)}
-              className={cn(
-                'bg-foreground text-background flex h-11 items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold shadow-sm ring-1 ring-foreground/10 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]',
-                mobileOpen
-                  ? 'translate-y-0 opacity-100'
-                  : 'translate-y-4 opacity-0'
-              )}
-              style={{
-                transitionDelay: mobileOpen
-                  ? `${100 + links.length * 50}ms`
-                  : '0ms',
-              }}
-            >
-              <Home className='size-4' aria-hidden='true' />
-              {t('LeYao portal home')}
-            </a>
           </nav>
 
           <div

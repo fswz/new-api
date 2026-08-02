@@ -121,7 +121,7 @@ export function AppHeader({
       <Button
         variant='default'
         size='sm'
-        className='ring-foreground/10 h-8 rounded-lg px-3 shadow-sm ring-1 transition-transform duration-200 hover:-translate-y-px active:translate-y-0'
+        className='leyao-portal-link h-8 rounded-lg px-3'
         nativeButton={false}
         render={
           <a
@@ -130,8 +130,10 @@ export function AppHeader({
           />
         }
       >
-        <Home aria-hidden='true' />
-        <span className='hidden sm:inline'>{t('LeYao portal home')}</span>
+        <Home className='relative z-10' aria-hidden='true' />
+        <span className='relative z-10 hidden sm:inline'>
+          {t('LeYao portal home')}
+        </span>
       </Button>
 
       {leftContent ? (
