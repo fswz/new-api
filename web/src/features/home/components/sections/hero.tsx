@@ -51,6 +51,23 @@ export function Hero(props: HeroProps) {
   const docsUrl =
     (status?.docs_link as string | undefined) || 'https://docs.newapi.pro'
 
+  const renderLeYaoGuideButton = () => (
+    <Button
+      variant='outline'
+      className='group border-border/50 hover:border-border hover:bg-muted/50 inline-flex h-11 items-center gap-1.5 rounded-lg px-5 text-sm font-medium'
+      render={
+        <a
+          href='/operation-manual.html'
+          target='_blank'
+          rel='noopener noreferrer'
+        />
+      }
+    >
+      <BookOpen className='text-muted-foreground/80 group-hover:text-foreground size-4 transition-colors duration-200' />
+      <span>{t('LeYao Guide')}</span>
+    </Button>
+  )
+
   const renderDocsButton = () => {
     const isExternal = docsUrl.startsWith('http')
     if (isExternal) {
@@ -63,7 +80,7 @@ export function Hero(props: HeroProps) {
           }
         >
           <BookOpen className='text-muted-foreground/80 group-hover:text-foreground size-4 transition-colors duration-200' />
-          <span>{t('Docs')}</span>
+          <span>{t('Deployment Docs')}</span>
         </Button>
       )
     }
@@ -74,7 +91,7 @@ export function Hero(props: HeroProps) {
         render={<Link to={docsUrl} />}
       >
         <BookOpen className='text-muted-foreground/80 group-hover:text-foreground size-4 transition-colors duration-200' />
-        <span>{t('Docs')}</span>
+        <span>{t('Deployment Docs')}</span>
       </Button>
     )
   }
@@ -146,6 +163,7 @@ export function Hero(props: HeroProps) {
                   {t('Go to Dashboard')}
                   <ArrowRight className='ml-1.5 size-4 transition-transform duration-200 group-hover:translate-x-0.5' />
                 </Button>
+                {renderLeYaoGuideButton()}
                 {renderDocsButton()}
               </>
             ) : (
@@ -164,6 +182,7 @@ export function Hero(props: HeroProps) {
                 >
                   {t('View Pricing')}
                 </Button>
+                {renderLeYaoGuideButton()}
                 {renderDocsButton()}
               </>
             )}

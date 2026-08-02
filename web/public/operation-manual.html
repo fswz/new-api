@@ -1,0 +1,1206 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="LeYao API 使用教程：创建 API 密钥、安装 Codex、配置 CC Switch，并验证接口连通性。"
+    />
+    <title>LeYao API 使用教程</title>
+    <link rel="icon" href="/favicon.ico" />
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f7f8fa;
+        --surface: #ffffff;
+        --surface-soft: #f0f3f6;
+        --text: #16191d;
+        --muted: #66707c;
+        --line: #dce1e7;
+        --accent: #087ea4;
+        --accent-strong: #075f7d;
+        --accent-soft: #e4f5fa;
+        --warm: #b42318;
+        --warm-soft: #fff0ed;
+        --code: #101418;
+        --code-text: #eaf2f5;
+        --shadow: 0 12px 34px rgba(31, 43, 55, 0.08);
+        --header-height: 64px;
+      }
+
+      html[data-theme='dark'] {
+        color-scheme: dark;
+        --bg: #111315;
+        --surface: #191c1f;
+        --surface-soft: #22262a;
+        --text: #f1f4f6;
+        --muted: #a0a9b2;
+        --line: #30363c;
+        --accent: #35b8d6;
+        --accent-strong: #73d3e7;
+        --accent-soft: #15353d;
+        --warm: #ff8a7b;
+        --warm-soft: #3a2523;
+        --code: #0b0e10;
+        --code-text: #eaf2f5;
+        --shadow: 0 18px 42px rgba(0, 0, 0, 0.24);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        scroll-padding-top: calc(var(--header-height) + 24px);
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", "Microsoft YaHei", sans-serif;
+        line-height: 1.7;
+        letter-spacing: 0;
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      a {
+        color: var(--accent);
+        text-underline-offset: 3px;
+      }
+
+      .reading-progress {
+        position: fixed;
+        z-index: 80;
+        top: 0;
+        left: 0;
+        width: 0;
+        height: 3px;
+        background: var(--accent);
+      }
+
+      .site-header {
+        position: sticky;
+        z-index: 70;
+        top: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: var(--header-height);
+        padding: 0 28px;
+        border-bottom: 1px solid var(--line);
+        background: color-mix(in srgb, var(--bg) 92%, transparent);
+        backdrop-filter: blur(14px);
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--text);
+        font-weight: 760;
+        text-decoration: none;
+      }
+
+      .brand img {
+        width: 30px;
+        height: 30px;
+        border-radius: 6px;
+      }
+
+      .header-nav {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .header-nav a,
+      .icon-button,
+      .menu-button {
+        min-height: 38px;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        color: var(--muted);
+        background: transparent;
+        text-decoration: none;
+      }
+
+      .header-nav a {
+        display: inline-flex;
+        align-items: center;
+        padding: 0 12px;
+        font-size: 14px;
+      }
+
+      .header-nav a:hover,
+      .icon-button:hover,
+      .menu-button:hover {
+        border-color: var(--line);
+        color: var(--text);
+        background: var(--surface);
+      }
+
+      .icon-button,
+      .menu-button {
+        display: inline-grid;
+        min-width: 38px;
+        place-items: center;
+        cursor: pointer;
+      }
+
+      .menu-button {
+        display: none;
+      }
+
+      .page-shell {
+        display: grid;
+        grid-template-columns: 270px minmax(0, 1fr);
+        max-width: 1440px;
+        min-height: calc(100vh - var(--header-height));
+        margin: 0 auto;
+      }
+
+      .sidebar {
+        position: sticky;
+        top: var(--header-height);
+        height: calc(100vh - var(--header-height));
+        padding: 30px 24px 48px;
+        overflow-y: auto;
+        border-right: 1px solid var(--line);
+      }
+
+      .sidebar-title {
+        margin: 0 0 22px;
+        font-size: 18px;
+      }
+
+      .nav-group {
+        margin-bottom: 22px;
+      }
+
+      .nav-group h3 {
+        margin: 0 0 8px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 760;
+        text-transform: uppercase;
+      }
+
+      .nav-group a {
+        display: block;
+        margin: 2px 0;
+        padding: 7px 10px;
+        border-left: 2px solid transparent;
+        border-radius: 0 5px 5px 0;
+        color: var(--muted);
+        font-size: 14px;
+        text-decoration: none;
+      }
+
+      .nav-group a:hover,
+      .nav-group a.active {
+        border-left-color: var(--accent);
+        color: var(--text);
+        background: var(--accent-soft);
+      }
+
+      .doc-main {
+        min-width: 0;
+        padding: 62px clamp(30px, 6vw, 92px) 100px;
+      }
+
+      article {
+        max-width: 880px;
+        margin: 0 auto;
+      }
+
+      .eyebrow {
+        margin: 0 0 14px;
+        color: var(--accent);
+        font-size: 13px;
+        font-weight: 760;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4 {
+        line-height: 1.25;
+        letter-spacing: 0;
+      }
+
+      h1 {
+        max-width: 760px;
+        margin: 0;
+        font-size: clamp(36px, 5vw, 62px);
+      }
+
+      .lead {
+        max-width: 760px;
+        margin: 22px 0 30px;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      h2 {
+        margin: 82px 0 18px;
+        padding-top: 4px;
+        font-size: 30px;
+      }
+
+      h3 {
+        margin: 42px 0 14px;
+        font-size: 22px;
+      }
+
+      h4 {
+        margin: 30px 0 12px;
+        font-size: 17px;
+      }
+
+      p {
+        margin: 12px 0;
+      }
+
+      .hero-actions,
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 0 16px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        color: var(--text);
+        background: var(--surface);
+        font-weight: 700;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .button.primary {
+        border-color: var(--accent);
+        color: #ffffff;
+        background: var(--accent);
+      }
+
+      html[data-theme='dark'] .button.primary {
+        color: #081014;
+      }
+
+      .button:hover {
+        border-color: var(--accent);
+      }
+
+      .callout {
+        margin: 28px 0;
+        padding: 18px 20px;
+        border: 1px solid var(--line);
+        border-left: 4px solid var(--accent);
+        border-radius: 6px;
+        background: var(--surface);
+      }
+
+      .callout.warning {
+        border-left-color: var(--warm);
+        background: var(--warm-soft);
+      }
+
+      .callout strong {
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .choice-grid,
+      .route-steps,
+      .faq-grid {
+        display: grid;
+        gap: 14px;
+      }
+
+      .choice-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .choice-card,
+      .planner,
+      .step,
+      details {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--surface);
+      }
+
+      .choice-card {
+        padding: 22px;
+      }
+
+      .choice-card h3 {
+        margin: 0 0 4px;
+        font-size: 18px;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        min-height: 24px;
+        margin-bottom: 14px;
+        padding: 0 9px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        color: var(--accent);
+        background: var(--accent-soft);
+        font-size: 12px;
+        font-weight: 760;
+      }
+
+      .fact-list {
+        display: grid;
+        gap: 8px;
+        margin: 18px 0 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .fact-list li {
+        display: flex;
+        justify-content: space-between;
+        gap: 18px;
+        padding-top: 8px;
+        border-top: 1px solid var(--line);
+      }
+
+      .fact-list span {
+        color: var(--muted);
+      }
+
+      .planner {
+        padding: 24px;
+      }
+
+      .planner-label {
+        margin: 18px 0 8px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .segmented {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+        padding: 5px;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        background: var(--surface-soft);
+      }
+
+      .segmented.apps {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .segmented button,
+      .tabs button {
+        min-height: 40px;
+        padding: 0 10px;
+        border: 0;
+        border-radius: 5px;
+        color: var(--muted);
+        background: transparent;
+        cursor: pointer;
+      }
+
+      .segmented button[aria-pressed='true'],
+      .tabs button[aria-selected='true'] {
+        color: var(--text);
+        background: var(--surface);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+      }
+
+      .route-result {
+        margin-top: 18px;
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--accent-soft);
+      }
+
+      .route-result strong {
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .route-steps {
+        counter-reset: steps;
+      }
+
+      .step {
+        position: relative;
+        padding: 20px 20px 20px 66px;
+        counter-increment: steps;
+      }
+
+      .step::before {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        display: grid;
+        width: 30px;
+        height: 30px;
+        place-items: center;
+        border-radius: 50%;
+        color: var(--accent-strong);
+        background: var(--accent-soft);
+        font-weight: 800;
+        content: counter(steps);
+      }
+
+      .step h4 {
+        margin: 0 0 4px;
+      }
+
+      .step p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .data-table {
+        width: 100%;
+        margin: 20px 0;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-collapse: separate;
+        border-spacing: 0;
+        border-radius: 7px;
+        background: var(--surface);
+      }
+
+      .data-table th,
+      .data-table td {
+        padding: 13px 15px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      .data-table tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .data-table th {
+        color: var(--muted);
+        background: var(--surface-soft);
+        font-size: 13px;
+      }
+
+      .tabs {
+        display: flex;
+        gap: 4px;
+        width: fit-content;
+        margin: 16px 0 10px;
+        padding: 4px;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        background: var(--surface-soft);
+      }
+
+      .tab-panel[hidden] {
+        display: none;
+      }
+
+      .code-block {
+        position: relative;
+        margin: 14px 0 22px;
+        overflow: hidden;
+        border: 1px solid #2a3035;
+        border-radius: 7px;
+        background: var(--code);
+      }
+
+      .code-label {
+        padding: 9px 14px;
+        border-bottom: 1px solid #2a3035;
+        color: #8e9aa5;
+        font-size: 12px;
+      }
+
+      pre {
+        margin: 0;
+        padding: 18px;
+        overflow-x: auto;
+        color: var(--code-text);
+        font: 13px/1.65 "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+      }
+
+      code {
+        padding: 2px 5px;
+        border-radius: 4px;
+        background: var(--surface-soft);
+        font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+        font-size: 0.92em;
+      }
+
+      pre code {
+        padding: 0;
+        background: transparent;
+      }
+
+      .copy-button {
+        position: absolute;
+        top: 7px;
+        right: 8px;
+        min-height: 30px;
+        padding: 0 10px;
+        border: 1px solid #394148;
+        border-radius: 5px;
+        color: #bdc7ce;
+        background: #171c20;
+        cursor: pointer;
+      }
+
+      .copy-button:hover {
+        color: #ffffff;
+        border-color: #6b7882;
+      }
+
+      details {
+        padding: 0 18px;
+      }
+
+      details + details {
+        margin-top: 10px;
+      }
+
+      summary {
+        padding: 17px 0;
+        font-weight: 720;
+        cursor: pointer;
+      }
+
+      details p {
+        margin-top: 0;
+        padding-bottom: 16px;
+        color: var(--muted);
+      }
+
+      .success-panel {
+        margin-top: 70px;
+        padding: 28px;
+        border: 1px solid var(--accent);
+        border-radius: 8px;
+        background: var(--accent-soft);
+      }
+
+      .success-panel h2 {
+        margin: 0 0 8px;
+        font-size: 24px;
+      }
+
+      .doc-footer {
+        margin-top: 80px;
+        padding-top: 24px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      @media (max-width: 920px) {
+        .site-header {
+          padding: 0 16px;
+        }
+
+        .header-nav a {
+          display: none;
+        }
+
+        .menu-button {
+          display: inline-grid;
+        }
+
+        .page-shell {
+          display: block;
+        }
+
+        .sidebar {
+          position: fixed;
+          z-index: 60;
+          top: var(--header-height);
+          left: 0;
+          width: min(320px, 86vw);
+          transform: translateX(-102%);
+          border-right: 1px solid var(--line);
+          background: var(--bg);
+          transition: transform 180ms ease;
+        }
+
+        body.menu-open .sidebar {
+          transform: translateX(0);
+        }
+
+        .doc-main {
+          padding: 44px 22px 80px;
+        }
+
+        .choice-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 560px) {
+        h1 {
+          font-size: 38px;
+        }
+
+        h2 {
+          margin-top: 64px;
+          font-size: 26px;
+        }
+
+        .segmented,
+        .segmented.apps {
+          grid-template-columns: 1fr;
+        }
+
+        .step {
+          padding-left: 58px;
+        }
+
+        .data-table {
+          display: block;
+          overflow-x: auto;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+
+        * {
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="reading-progress" aria-hidden="true"></div>
+    <header class="site-header">
+      <a class="brand" href="/">
+        <img src="/logo.png" alt="LeYao API" />
+        <span>LeYao API 教程</span>
+      </a>
+      <nav class="header-nav" aria-label="快捷导航">
+        <a href="#开始之前">开始之前</a>
+        <a href="#选择安装路线">选择路线</a>
+        <a href="#模块一-创建令牌">创建密钥</a>
+        <a href="#模块五-配置令牌">配置 Codex</a>
+        <button class="menu-button" type="button" aria-label="打开目录" aria-expanded="false">☰</button>
+        <button class="icon-button" type="button" aria-label="切换主题" title="切换主题">◐</button>
+      </nav>
+    </header>
+
+    <div class="page-shell">
+      <aside class="sidebar" aria-label="教程目录">
+        <h2 class="sidebar-title">LeYao API 教程</h2>
+        <nav>
+          <section class="nav-group">
+            <h3>快速开始</h3>
+            <a href="#开始之前">准备环境</a>
+            <a href="#选择安装路线">选择安装路线</a>
+          </section>
+          <section class="nav-group">
+            <h3>账号与密钥</h3>
+            <a href="#模块一-创建令牌">创建 API 密钥</a>
+            <a href="#步骤">创建步骤</a>
+            <a href="#你需要记住的信息">保存关键信息</a>
+          </section>
+          <section class="nav-group">
+            <h3>配置工具</h3>
+            <a href="#模块三-安装-CC-Switch">安装 CC Switch</a>
+            <a href="#CC-Switch-Windows">Windows</a>
+            <a href="#CC-Switch-macOS">macOS</a>
+            <a href="#CC-Switch-Linux">Linux / WSL</a>
+            <a href="#验证-CC-Switch">验证安装</a>
+            <a href="#安装应用">安装应用</a>
+            <a href="#安装-Codex">安装 Codex</a>
+            <a href="#模块五-配置令牌">配置 API 密钥</a>
+            <a href="#方式一-通过-CC-Switch-配置-推荐">通过 CC Switch 配置</a>
+            <a href="#方式二-手动配置-Codex-不使用-CC-Switch">手动配置 Codex</a>
+            <a href="#验证配置">验证配置</a>
+          </section>
+          <section class="nav-group">
+            <h3>更多</h3>
+            <a href="#常见问题">常见问题</a>
+            <a href="#安全建议">安全建议</a>
+          </section>
+        </nav>
+      </aside>
+
+      <main class="doc-main">
+        <article>
+          <p class="eyebrow">少折腾 · 多创造</p>
+          <h1>从创建密钥到运行 Codex，一篇完成</h1>
+          <p class="lead">
+            这份教程帮助你把 LeYao API 接入 Codex App、Codex CLI 和 CC Switch。按顺序完成账号注册、API
+            密钥创建、应用安装、连接配置和连通性验证后，即可通过统一入口使用已开通的模型。
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="#模块一-创建令牌">从第一步开始</a>
+            <a class="button" href="#常见问题">查看常见问题</a>
+          </div>
+
+          <div class="callout">
+            <strong>本站 API 地址</strong>
+            OpenAI 兼容 Base URL 为
+            <a href="https://api.leyao.fswz.cc/v1">https://api.leyao.fswz.cc/v1</a>。请只向可信应用填写 API
+            密钥，不要将密钥发给他人或粘贴到公开仓库。
+          </div>
+
+          <h2 id="开始之前">开始之前</h2>
+          <p>
+            没有使用过终端命令，可以选择 Codex App，并通过 CC Switch 导入配置；习惯命令行或需要脚本自动化时，再选择 Codex
+            CLI。两条路线使用同一个 LeYao API 账号和同一套 API 密钥。
+          </p>
+
+          <div class="choice-grid">
+            <section class="choice-card">
+              <span class="badge">推荐新手</span>
+              <h3>图形界面路线</h3>
+              <p>适合直接使用 Codex App，希望尽量减少终端操作的用户。</p>
+              <ul class="fact-list">
+                <li><span>LeYao API 账号</span><strong>需要</strong></li>
+                <li><span>Codex App</span><strong>需要</strong></li>
+                <li><span>Node.js</span><strong>不需要</strong></li>
+                <li><span>终端命令</span><strong>少量或无需</strong></li>
+              </ul>
+            </section>
+            <section class="choice-card">
+              <span class="badge">适合进阶</span>
+              <h3>终端命令路线</h3>
+              <p>适合需要 Codex CLI、自动化脚本和开发工作流的用户。</p>
+              <ul class="fact-list">
+                <li><span>LeYao API 账号</span><strong>需要</strong></li>
+                <li><span>Codex CLI</span><strong>需要</strong></li>
+                <li><span>Node.js</span><strong>需要</strong></li>
+                <li><span>可用终端</span><strong>需要</strong></li>
+              </ul>
+            </section>
+          </div>
+
+          <h2 id="选择安装路线">选择安装路线</h2>
+          <p>选择系统和准备使用的应用，页面会给出对应的推荐步骤。</p>
+          <section class="planner" aria-label="安装路线选择器">
+            <p class="planner-label">你的系统</p>
+            <div class="segmented" role="group" aria-label="选择操作系统">
+              <button type="button" data-system="Windows" aria-pressed="true">Windows</button>
+              <button type="button" data-system="macOS" aria-pressed="false">macOS</button>
+              <button type="button" data-system="Linux / WSL" aria-pressed="false">Linux / WSL</button>
+            </div>
+            <p class="planner-label">你准备使用的应用</p>
+            <div class="segmented apps" role="group" aria-label="选择应用">
+              <button type="button" data-app="Codex App" aria-pressed="true">Codex App</button>
+              <button type="button" data-app="Codex CLI" aria-pressed="false">Codex CLI</button>
+            </div>
+            <div class="route-result" aria-live="polite">
+              <strong class="route-title">Windows · Codex App</strong>
+              <span class="route-copy">创建 API 密钥，安装 Codex App，再通过 CC Switch 导入配置并验证连接。</span>
+            </div>
+            <div class="button-row" style="margin-top: 16px">
+              <a class="button primary" href="#模块一-创建令牌">创建 API 密钥</a>
+              <a class="button" href="#安装-Codex">查看安装方法</a>
+            </div>
+          </section>
+
+          <h2 id="模块一-创建令牌">创建 API 密钥</h2>
+          <p>
+            API 密钥是应用调用 LeYao API 的凭证。它与登录密码不同，可以独立禁用、限制额度和设置过期时间。
+          </p>
+
+          <h3 id="步骤">创建步骤</h3>
+          <div class="route-steps">
+            <section class="step">
+              <h4>注册并登录</h4>
+              <p>
+                打开 <a href="https://api.leyao.fswz.cc/sign-up">LeYao API 注册页</a> 创建账号，完成登录后进入控制台。
+              </p>
+            </section>
+            <section class="step">
+              <h4>进入 API 密钥页面</h4>
+              <p>
+                在左侧导航选择“API 密钥”，或直接打开
+                <a href="https://api.leyao.fswz.cc/keys">https://api.leyao.fswz.cc/keys</a>。
+              </p>
+            </section>
+            <section class="step">
+              <h4>创建密钥</h4>
+              <p>点击“创建 API 密钥”，名称建议写设备或用途，例如 codex-windows、office-codex。</p>
+            </section>
+            <section class="step">
+              <h4>设置分组和额度</h4>
+              <p>选择可用分组；需要控制风险时，为密钥设置额度、过期时间和允许访问的模型。</p>
+            </section>
+            <section class="step">
+              <h4>保存并复制</h4>
+              <p>保存后复制以 sk- 开头的密钥。密钥只应存放在本机安全配置或可信的密钥管理器中。</p>
+            </section>
+          </div>
+
+          <h3 id="你需要记住的信息">你需要记住的信息</h3>
+          <table class="data-table">
+            <thead>
+              <tr><th>信息</th><th>填写内容</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>OpenAI 兼容 Base URL</td>
+                <td><a href="https://api.leyao.fswz.cc/v1">https://api.leyao.fswz.cc/v1</a></td>
+              </tr>
+              <tr><td>API Key</td><td><code>sk-xxxxxxxxxxxxxxxx</code></td></tr>
+              <tr><td>推荐测试模型</td><td><code>gpt-5.4-mini</code></td></tr>
+              <tr><td>高能力模型</td><td><code>gpt-5.6-sol</code></td></tr>
+            </tbody>
+          </table>
+
+          <div class="callout warning">
+            <strong>密钥泄露怎么办？</strong>
+            立即在“API 密钥”页面禁用或删除旧密钥，再创建新密钥。不要只修改本机配置后继续保留泄露的密钥。
+          </div>
+
+          <h2 id="模块三-安装-CC-Switch">安装 CC Switch</h2>
+          <p>
+            CC Switch 是跨平台配置管理工具，可集中管理 Codex 等 AI 编程工具的 Provider、Base URL、API Key 和模型映射。
+            不使用 CC Switch 也可以跳到“手动配置 Codex”。
+          </p>
+          <div class="button-row">
+            <a class="button" href="https://github.com/farion1231/cc-switch/releases" target="_blank" rel="noreferrer">打开 CC Switch 下载页</a>
+            <a class="button" href="#方式二-手动配置-Codex-不使用-CC-Switch">跳过 CC Switch</a>
+          </div>
+
+          <h3 id="CC-Switch-Windows">Windows</h3>
+          <p>从 Release 页面下载 Windows 安装包，完成安装后启动 CC Switch。若系统弹出安全提示，请确认下载来源后再继续。</p>
+
+          <h3 id="CC-Switch-macOS">macOS</h3>
+          <p>下载与你芯片架构匹配的安装包。Apple Silicon 选择 arm64，Intel Mac 选择 x64；首次打开时按系统提示授权。</p>
+
+          <h3 id="CC-Switch-Linux">Linux / WSL</h3>
+          <table class="data-table">
+            <thead><tr><th>环境</th><th>安装方式</th></tr></thead>
+            <tbody>
+              <tr><td>Ubuntu / Debian</td><td>下载 <code>.deb</code> 包后执行 <code>sudo dpkg -i cc-switch-*.deb</code></td></tr>
+              <tr><td>Fedora / RHEL</td><td>下载 <code>.rpm</code> 包后执行 <code>sudo rpm -i cc-switch-*.rpm</code></td></tr>
+              <tr><td>Arch Linux</td><td>使用 AUR 安装 <code>paru -S cc-switch-bin</code></td></tr>
+              <tr><td>通用 Linux</td><td>下载 AppImage，赋予执行权限后运行</td></tr>
+              <tr><td>WSL</td><td>建议在 Windows 侧运行 CC Switch，在 WSL 中使用 Codex CLI</td></tr>
+            </tbody>
+          </table>
+
+          <h3 id="验证-CC-Switch">验证 CC Switch</h3>
+          <p>启动后应能打开 Provider 列表，并识别本机已安装的 Codex。若未识别，可先完成下一节的 Codex 安装，再重新启动 CC Switch。</p>
+
+          <h2 id="安装应用">安装应用</h2>
+          <h3 id="安装-Codex">安装 Codex</h3>
+          <p>Codex 有桌面应用和命令行两种使用方式。只使用桌面应用时，无需安装 Node.js。</p>
+
+          <h4 id="模块-下载-Codex-App">Codex App</h4>
+          <p>
+            前往 <a href="https://openai.com/zh-Hans-CN/codex/" target="_blank" rel="noreferrer">OpenAI Codex 官方页面</a>
+            下载应用。Windows 也可从
+            <a href="https://apps.microsoft.com/detail/9plm9xgg6vks?hl=zh-CN&amp;gl=CN" target="_blank" rel="noreferrer">Microsoft Store</a>
+            安装。
+          </p>
+
+          <h4>Codex CLI</h4>
+          <p>先安装 Node.js LTS，然后在终端执行：</p>
+          <div class="code-block">
+            <div class="code-label">终端</div>
+            <button class="copy-button" type="button">复制</button>
+            <pre><code>npm install -g @openai/codex
+codex --version</code></pre>
+          </div>
+
+          <h2 id="模块五-配置令牌">配置 API 密钥</h2>
+          <p>完成应用安装后，将创建的 API 密钥和本站 Base URL 配置到 CC Switch 或 Codex 中。</p>
+
+          <h3 id="方式一-通过-CC-Switch-配置-推荐">通过 CC Switch 配置（推荐）</h3>
+          <p>LeYao API 的 API 密钥页面提供 CC Switch 配置入口；若系统没有自动唤起应用，可以使用后面的手动添加方法。</p>
+
+          <h4 id="一键导入">从 API 密钥页面导入</h4>
+          <div class="route-steps">
+            <section class="step"><h4>打开 API 密钥页面</h4><p>登录控制台，进入“API 密钥”，找到准备在本机使用的密钥。</p></section>
+            <section class="step"><h4>选择 CC Switch</h4><p>打开密钥右侧菜单，选择 CC Switch 配置入口。</p></section>
+            <section class="step"><h4>确认系统唤起</h4><p>浏览器会请求打开 CC Switch。确认后检查 Provider 名称、Base URL 和目标应用。</p></section>
+            <section class="step"><h4>选择模型</h4><p>主力模型可选择 gpt-5.6-sol；低成本或连通性测试可选择 gpt-5.4-mini。</p></section>
+            <section class="step"><h4>保存并启用</h4><p>保存 Provider，在 CC Switch 中将其设为当前配置，然后重启 Codex。</p></section>
+          </div>
+
+          <h4>手动添加 Provider</h4>
+          <table class="data-table">
+            <thead><tr><th>字段</th><th>内容</th></tr></thead>
+            <tbody>
+              <tr><td>Application</td><td>Codex</td></tr>
+              <tr><td>Name</td><td>LeYao API</td></tr>
+              <tr><td>Provider</td><td>Custom / OpenAI Compatible</td></tr>
+              <tr><td>Base URL</td><td><code>https://api.leyao.fswz.cc/v1</code></td></tr>
+              <tr><td>API Key</td><td>在 LeYao API 创建的密钥</td></tr>
+              <tr><td>Main Model</td><td><code>gpt-5.6-sol</code></td></tr>
+            </tbody>
+          </table>
+
+          <h3 id="方式二-手动配置-Codex-不使用-CC-Switch">手动配置 Codex（不使用 CC Switch）</h3>
+          <p>不使用配置管理工具时，可以设置环境变量并编辑 Codex 配置文件。</p>
+
+          <div class="tabs" role="tablist" aria-label="选择系统命令">
+            <button type="button" role="tab" aria-selected="true" aria-controls="panel-powershell" id="tab-powershell">PowerShell</button>
+            <button type="button" role="tab" aria-selected="false" aria-controls="panel-bash" id="tab-bash">macOS / Linux</button>
+          </div>
+
+          <section class="tab-panel" id="panel-powershell" role="tabpanel" aria-labelledby="tab-powershell">
+            <div class="code-block">
+              <div class="code-label">PowerShell</div>
+              <button class="copy-button" type="button">复制</button>
+              <pre><code>[Environment]::SetEnvironmentVariable("OPENAI_API_KEY", "sk-xxxxxxxxxxxxxxxx", "User")
+[Environment]::SetEnvironmentVariable("OPENAI_BASE_URL", "https://api.leyao.fswz.cc/v1", "User")</code></pre>
+            </div>
+            <p>设置完成后关闭并重新打开终端，让用户级环境变量生效。</p>
+          </section>
+
+          <section class="tab-panel" id="panel-bash" role="tabpanel" aria-labelledby="tab-bash" hidden>
+            <div class="code-block">
+              <div class="code-label">bash / zsh</div>
+              <button class="copy-button" type="button">复制</button>
+              <pre><code>export OPENAI_API_KEY="sk-xxxxxxxxxxxxxxxx"
+export OPENAI_BASE_URL="https://api.leyao.fswz.cc/v1"</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-label">重新加载 shell</div>
+              <button class="copy-button" type="button">复制</button>
+              <pre><code>source ~/.bashrc
+# 使用 zsh 时执行：source ~/.zshrc</code></pre>
+            </div>
+          </section>
+
+          <h4>编辑 Codex 配置文件</h4>
+          <p>配置文件通常位于 <code>~/.codex/config.toml</code>。Windows 用户可在用户目录下的 <code>.codex</code> 文件夹中找到它。</p>
+          <div class="code-block">
+            <div class="code-label">config.toml</div>
+            <button class="copy-button" type="button">复制</button>
+            <pre><code>model = "gpt-5.6-sol"
+model_provider = "leyao"
+
+[model_providers.leyao]
+name = "LeYao API"
+base_url = "https://api.leyao.fswz.cc/v1"
+wire_api = "responses"
+env_key = "OPENAI_API_KEY"</code></pre>
+          </div>
+          <div class="callout">
+            <strong>env_key 填变量名</strong>
+            <code>env_key</code> 应填写 <code>OPENAI_API_KEY</code>，不要把真实密钥直接写进 <code>config.toml</code>。
+          </div>
+
+          <h3 id="验证配置">验证配置</h3>
+          <p>重新打开终端后运行：</p>
+          <div class="code-block">
+            <div class="code-label">终端</div>
+            <button class="copy-button" type="button">复制</button>
+            <pre><code>codex "请用一句话说明当前连接是否正常"</code></pre>
+          </div>
+          <p>能够正常返回内容即表示配置成功。也可以先在 LeYao API 控制台的“游乐场”中测试账号和模型权限。</p>
+
+          <h2 id="常见问题">常见问题</h2>
+          <div class="faq-grid">
+            <details>
+              <summary>提示 401 或 API Key 无效怎么办？</summary>
+              <p>确认密钥没有多余空格、没有被禁用或过期，并检查应用读取的是当前终端中的 OPENAI_API_KEY。密钥泄露时应直接作废并重新创建。</p>
+            </details>
+            <details>
+              <summary>提示 404 或无法找到接口怎么办？</summary>
+              <p>Codex 使用的 Base URL 应为 https://api.leyao.fswz.cc/v1。漏掉 /v1、重复添加 /v1，或把模型名称写错，都可能导致请求失败。</p>
+            </details>
+            <details>
+              <summary>提示模型不存在或无权访问怎么办？</summary>
+              <p>在模型广场确认模型名称，并检查 API 密钥所属分组是否包含该模型。修改分组后，重新启动应用或新建会话再测试。</p>
+            </details>
+            <details>
+              <summary>CC Switch 已保存，但 Codex 仍使用旧配置怎么办？</summary>
+              <p>确认已启用正确的 Provider，完全退出并重新打开 Codex；终端用户还应关闭旧终端窗口，避免旧环境变量继续生效。</p>
+            </details>
+            <details>
+              <summary>连接超时或响应很慢怎么办？</summary>
+              <p>先访问 LeYao API 控制台确认网络可达，再检查本机代理、DNS 和防火墙。代理软件开启时，可尝试将 api.leyao.fswz.cc 加入直连规则。</p>
+            </details>
+            <details>
+              <summary>如何控制单个设备的用量？</summary>
+              <p>为每台设备分别创建 API 密钥，并设置独立名称、额度和过期时间。这样可以单独查看日志，也能在设备丢失时只撤销对应密钥。</p>
+            </details>
+          </div>
+
+          <h2 id="安全建议">安全建议</h2>
+          <ul>
+            <li>不同设备和用途使用不同 API 密钥，避免多人共用一个密钥。</li>
+            <li>为测试环境设置较小额度和有效期，生产用途再单独创建密钥。</li>
+            <li>不要在截图、群聊、工单、代码仓库和 shell 历史中暴露完整密钥。</li>
+            <li>定期检查使用日志，发现异常模型、IP 或用量时立即撤销密钥。</li>
+          </ul>
+
+          <section class="success-panel">
+            <h2>配置完成</h2>
+            <p>现在可以在 Codex 中使用 LeYao API。建议先用 gpt-5.4-mini 完成连通性测试，再按任务复杂度切换到更高能力模型。</p>
+            <div class="button-row">
+              <a class="button primary" href="https://api.leyao.fswz.cc/keys">管理 API 密钥</a>
+              <a class="button" href="https://api.leyao.fswz.cc/pricing">查看模型价格</a>
+            </div>
+          </section>
+
+          <footer class="doc-footer">
+            <p>LeYao API 使用教程 · API Base URL：<a href="https://api.leyao.fswz.cc/v1">https://api.leyao.fswz.cc/v1</a></p>
+          </footer>
+        </article>
+      </main>
+    </div>
+
+    <script>
+      const root = document.documentElement
+      const themeButton = document.querySelector('.icon-button')
+      const menuButton = document.querySelector('.menu-button')
+      const savedTheme = localStorage.getItem('leyao-doc-theme')
+      const preferredDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+
+      root.dataset.theme = savedTheme || (preferredDark ? 'dark' : 'light')
+
+      themeButton.addEventListener('click', () => {
+        const nextTheme = root.dataset.theme === 'dark' ? 'light' : 'dark'
+        root.dataset.theme = nextTheme
+        localStorage.setItem('leyao-doc-theme', nextTheme)
+      })
+
+      menuButton.addEventListener('click', () => {
+        const isOpen = document.body.classList.toggle('menu-open')
+        menuButton.setAttribute('aria-expanded', String(isOpen))
+        menuButton.setAttribute('aria-label', isOpen ? '关闭目录' : '打开目录')
+        menuButton.textContent = isOpen ? '×' : '☰'
+      })
+
+      document.querySelectorAll('.sidebar a').forEach((link) => {
+        link.addEventListener('click', () => {
+          document.body.classList.remove('menu-open')
+          menuButton.setAttribute('aria-expanded', 'false')
+          menuButton.setAttribute('aria-label', '打开目录')
+          menuButton.textContent = '☰'
+        })
+      })
+
+      const routeState = { system: 'Windows', app: 'Codex App' }
+      const routeDescriptions = {
+        'Codex App': '创建 API 密钥，安装 Codex App，再通过 CC Switch 导入配置并验证连接。',
+        'Codex CLI': '创建 API 密钥，安装 Node.js 与 Codex CLI，设置环境变量和 config.toml 后验证连接。',
+      }
+
+      function updateRoute() {
+        document.querySelector('.route-title').textContent = `${routeState.system} · ${routeState.app}`
+        document.querySelector('.route-copy').textContent = routeDescriptions[routeState.app]
+      }
+
+      document.querySelectorAll('[data-system]').forEach((button) => {
+        button.addEventListener('click', () => {
+          routeState.system = button.dataset.system
+          document.querySelectorAll('[data-system]').forEach((item) => {
+            item.setAttribute('aria-pressed', String(item === button))
+          })
+          updateRoute()
+        })
+      })
+
+      document.querySelectorAll('[data-app]').forEach((button) => {
+        button.addEventListener('click', () => {
+          routeState.app = button.dataset.app
+          document.querySelectorAll('[data-app]').forEach((item) => {
+            item.setAttribute('aria-pressed', String(item === button))
+          })
+          updateRoute()
+        })
+      })
+
+      document.querySelectorAll('[role="tab"]').forEach((tab) => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('[role="tab"]').forEach((item) => {
+            const selected = item === tab
+            item.setAttribute('aria-selected', String(selected))
+            document.getElementById(item.getAttribute('aria-controls')).hidden = !selected
+          })
+        })
+      })
+
+      document.querySelectorAll('.copy-button').forEach((button) => {
+        button.addEventListener('click', async () => {
+          const text = button.parentElement.querySelector('code').textContent
+          let copied = false
+          try {
+            await navigator.clipboard.writeText(text)
+            copied = true
+          } catch {
+            const textarea = document.createElement('textarea')
+            textarea.value = text
+            textarea.setAttribute('readonly', '')
+            textarea.style.position = 'fixed'
+            textarea.style.opacity = '0'
+            document.body.appendChild(textarea)
+            textarea.select()
+            copied = document.execCommand('copy')
+            textarea.remove()
+          }
+          const original = button.textContent
+          button.textContent = copied ? '已复制' : '复制失败'
+          window.setTimeout(() => {
+            button.textContent = original
+          }, 1400)
+        })
+      })
+
+      const navLinks = [...document.querySelectorAll('.sidebar a')]
+      const sections = navLinks
+        .map((link) => document.querySelector(link.getAttribute('href')))
+        .filter(Boolean)
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          const current = entries
+            .filter((entry) => entry.isIntersecting)
+            .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0]
+          if (!current) return
+          navLinks.forEach((link) => {
+            link.classList.toggle('active', link.getAttribute('href') === `#${current.target.id}`)
+          })
+        },
+        { rootMargin: '-18% 0px -70% 0px', threshold: 0 }
+      )
+
+      sections.forEach((section) => observer.observe(section))
+
+      window.addEventListener(
+        'scroll',
+        () => {
+          const max = document.documentElement.scrollHeight - window.innerHeight
+          const progress = max > 0 ? (window.scrollY / max) * 100 : 0
+          document.querySelector('.reading-progress').style.width = `${progress}%`
+        },
+        { passive: true }
+      )
+    </script>
+  </body>
+</html>
