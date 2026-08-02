@@ -17,6 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { Link, useNavigate, useRouterState } from '@tanstack/react-router'
+import { Home } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -97,6 +98,34 @@ export function PublicHeader(props: PublicHeaderProps) {
   const isAuthenticated = !!user
   const displaySiteName = customSiteName || systemName
   const links = dynamicLinks.length > 0 ? dynamicLinks : navLinks
+  let logoContent: React.ReactNode = (
+    <HeaderLogo
+      src={systemLogo}
+      loading={loading}
+      logoLoaded={logoLoaded}
+      className='size-full rounded-lg object-contain'
+    />
+  )
+  if (loading) {
+    logoContent = <Skeleton className='size-full rounded-lg' />
+  } else if (customLogo) {
+    logoContent = customLogo
+  }
+
+  let authButton: React.ReactNode = (
+    <Button
+      size='sm'
+      className='h-8 rounded-lg px-3.5 text-xs font-medium'
+      render={<Link to='/sign-in' />}
+    >
+      {t('Sign in')}
+    </Button>
+  )
+  if (loading) {
+    authButton = <Skeleton className='h-8 w-20 rounded-lg' />
+  } else if (isAuthenticated) {
+    authButton = <ProfileDropdown />
+  }
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
@@ -196,18 +225,7 @@ export function PublicHeader(props: PublicHeaderProps) {
               className='group flex shrink-0 items-center gap-2.5'
             >
               <div className='flex size-7 shrink-0 items-center justify-center transition-all duration-300 group-hover:scale-105'>
-                {loading ? (
-                  <Skeleton className='size-full rounded-lg' />
-                ) : customLogo ? (
-                  customLogo
-                ) : (
-                  <HeaderLogo
-                    src={systemLogo}
-                    loading={loading}
-                    logoLoaded={logoLoaded}
-                    className='size-full rounded-lg object-contain'
-                  />
-                )}
+                {logoContent}
               </div>
               <span className='text-sm font-semibold tracking-tight'>
                 {loading ? <Skeleton className='h-4 w-16' /> : displaySiteName}
@@ -216,12 +234,12 @@ export function PublicHeader(props: PublicHeaderProps) {
 
             {/* Desktop nav */}
             <div className='hidden items-center gap-0.5 sm:flex'>
-              {links.map((link, i) => {
+              {links.map((link) => {
                 const isActive = pathname === link.href
                 if (link.external) {
                   return (
                     <a
-                      key={i}
+                      key={`${link.href}-${link.title}`}
                       href={link.href}
                       target='_blank'
                       rel='noopener noreferrer'
@@ -239,7 +257,7 @@ export function PublicHeader(props: PublicHeaderProps) {
                 }
                 return (
                   <Link
-                    key={i}
+                    key={`${link.href}-${link.title}`}
                     to={link.href}
                     disabled={link.disabled}
                     onClick={(event) => handleNavLinkClick(event, link)}
@@ -255,6 +273,18 @@ export function PublicHeader(props: PublicHeaderProps) {
                   </Link>
                 )
               })}
+
+              <a
+                href='https://leyao.fswz.cc/'
+                aria-label={t('LeYao portal home')}
+                title={t('LeYao portal home')}
+                className='bg-foreground text-background hover:bg-foreground/90 ring-foreground/10 inline-flex h-8 items-center gap-1.5 rounded-lg px-3 text-sm font-semibold shadow-sm ring-1 transition-all duration-200 hover:-translate-y-px active:translate-y-0'
+              >
+                <Home className='size-4' aria-hidden='true' />
+                <span className='hidden xl:inline'>
+                  {t('LeYao portal home')}
+                </span>
+              </a>
 
               {(showLanguageSwitcher ||
                 showThemeSwitch ||
@@ -280,19 +310,7 @@ export function PublicHeader(props: PublicHeaderProps) {
               {showAuthButtons && (
                 <>
                   <div className='bg-border/40 mx-1 h-4 w-px' />
-                  {loading ? (
-                    <Skeleton className='h-8 w-20 rounded-lg' />
-                  ) : isAuthenticated ? (
-                    <ProfileDropdown />
-                  ) : (
-                    <Button
-                      size='sm'
-                      className='h-8 rounded-lg px-3.5 text-xs font-medium'
-                      render={<Link to='/sign-in' />}
-                    >
-                      {t('Sign in')}
-                    </Button>
-                  )}
+                  {authButton}
                 </>
               )}
             </div>
@@ -364,7 +382,7 @@ export function PublicHeader(props: PublicHeaderProps) {
               if (link.external) {
                 return (
                   <a
-                    key={i}
+                    key={`${link.href}-${link.title}`}
                     href={link.href}
                     target='_blank'
                     rel='noopener noreferrer'
@@ -380,7 +398,7 @@ export function PublicHeader(props: PublicHeaderProps) {
               }
               return (
                 <Link
-                  key={i}
+                  key={`${link.href}-${link.title}`}
                   to={link.href}
                   disabled={link.disabled}
                   onClick={(event) => handleNavLinkClick(event, link, true)}
@@ -391,6 +409,24 @@ export function PublicHeader(props: PublicHeaderProps) {
                 </Link>
               )
             })}
+            <a
+              href='https://leyao.fswz.cc/'
+              onClick={() => setMobileOpen(false)}
+              className={cn(
+                'bg-foreground text-background flex h-11 items-center justify-center gap-2 rounded-lg px-4 text-sm font-semibold shadow-sm ring-1 ring-foreground/10 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]',
+                mobileOpen
+                  ? 'translate-y-0 opacity-100'
+                  : 'translate-y-4 opacity-0'
+              )}
+              style={{
+                transitionDelay: mobileOpen
+                  ? `${100 + links.length * 50}ms`
+                  : '0ms',
+              }}
+            >
+              <Home className='size-4' aria-hidden='true' />
+              {t('LeYao portal home')}
+            </a>
           </nav>
 
           <div

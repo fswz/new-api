@@ -29,7 +29,7 @@ import { useNotifications } from '@/hooks/use-notifications'
 import { useTopNavLinks } from '@/hooks/use-top-nav-links'
 
 import { defaultTopNavLinks } from '../config/top-nav.config'
-import { type TopNavLink } from '../types'
+import type { TopNavLink } from '../types'
 import { Header } from './header'
 import { SystemBrand } from './system-brand'
 import { TopNav } from './top-nav'
@@ -116,54 +116,53 @@ export function AppHeader({
   const notifications = useNotifications()
 
   return (
-    <>
-      <Header>
-        <SystemBrand variant='inline' />
-        <Button
-          variant='ghost'
-          size='sm'
-          nativeButton={false}
-          render={
-            <a
-              href='https://leyao.fswz.cc/'
-              aria-label={t('LeYao portal home')}
+    <Header>
+      <SystemBrand variant='inline' />
+      <Button
+        variant='default'
+        size='sm'
+        className='ring-foreground/10 h-8 rounded-lg px-3 shadow-sm ring-1 transition-transform duration-200 hover:-translate-y-px active:translate-y-0'
+        nativeButton={false}
+        render={
+          <a
+            href='https://leyao.fswz.cc/'
+            aria-label={t('LeYao portal home')}
+          />
+        }
+      >
+        <Home aria-hidden='true' />
+        <span className='hidden sm:inline'>{t('LeYao portal home')}</span>
+      </Button>
+
+      {leftContent ? (
+        <div className='ms-2 flex items-center'>{leftContent}</div>
+      ) : null}
+
+      {rightContent ?? (
+        <div className='ms-auto flex items-center gap-1 sm:gap-2'>
+          {showTopNav && (
+            <div className='me-1 hidden lg:block'>
+              <TopNav links={links} />
+            </div>
+          )}
+          {showSearch && <Search />}
+          {showNotifications && (
+            <NotificationPopover
+              open={notifications.popoverOpen}
+              onOpenChange={notifications.setPopoverOpen}
+              unreadCount={notifications.unreadCount}
+              activeTab={notifications.activeTab}
+              onTabChange={notifications.setActiveTab}
+              notice={notifications.notice}
+              announcements={notifications.announcements}
+              loading={notifications.loading}
             />
-          }
-        >
-          <Home aria-hidden='true' />
-          <span className='hidden sm:inline'>{t('LeYao portal home')}</span>
-        </Button>
-
-        {leftContent ? (
-          <div className='ms-2 flex items-center'>{leftContent}</div>
-        ) : null}
-
-        {rightContent ?? (
-          <div className='ms-auto flex items-center gap-1 sm:gap-2'>
-            {showTopNav && (
-              <div className='me-1 hidden lg:block'>
-                <TopNav links={links} />
-              </div>
-            )}
-            {showSearch && <Search />}
-            {showNotifications && (
-              <NotificationPopover
-                open={notifications.popoverOpen}
-                onOpenChange={notifications.setPopoverOpen}
-                unreadCount={notifications.unreadCount}
-                activeTab={notifications.activeTab}
-                onTabChange={notifications.setActiveTab}
-                notice={notifications.notice}
-                announcements={notifications.announcements}
-                loading={notifications.loading}
-              />
-            )}
-            <LanguageSwitcher />
-            {showConfigDrawer && <ConfigDrawer />}
-            {showProfileDropdown && <ProfileDropdown />}
-          </div>
-        )}
-      </Header>
-    </>
+          )}
+          <LanguageSwitcher />
+          {showConfigDrawer && <ConfigDrawer />}
+          {showProfileDropdown && <ProfileDropdown />}
+        </div>
+      )}
+    </Header>
   )
 }
