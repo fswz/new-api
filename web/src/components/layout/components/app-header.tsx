@@ -16,11 +16,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
+import { Home } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+
 import { ConfigDrawer } from '@/components/config-drawer'
 import { LanguageSwitcher } from '@/components/language-switcher'
 import { NotificationPopover } from '@/components/notification-popover'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
+import { Button } from '@/components/ui/button'
 import { useNotifications } from '@/hooks/use-notifications'
 import { useTopNavLinks } from '@/hooks/use-top-nav-links'
 
@@ -103,6 +107,7 @@ export function AppHeader({
   showConfigDrawer = true,
   showProfileDropdown = true,
 }: AppHeaderProps) {
+  const { t } = useTranslation()
   // Prioritize dynamically generated links from backend
   const dynamicLinks = useTopNavLinks()
   const links = dynamicLinks.length > 0 ? dynamicLinks : navLinks
@@ -114,6 +119,20 @@ export function AppHeader({
     <>
       <Header>
         <SystemBrand variant='inline' />
+        <Button
+          variant='ghost'
+          size='sm'
+          nativeButton={false}
+          render={
+            <a
+              href='https://leyao.fswz.cc/'
+              aria-label={t('LeYao portal home')}
+            />
+          }
+        >
+          <Home aria-hidden='true' />
+          <span className='hidden sm:inline'>{t('LeYao portal home')}</span>
+        </Button>
 
         {leftContent ? (
           <div className='ms-2 flex items-center'>{leftContent}</div>
